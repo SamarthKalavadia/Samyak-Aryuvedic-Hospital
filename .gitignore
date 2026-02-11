@@ -1,43 +1,4 @@
-# ======================
-# Node modules
-# ======================
 node_modules/
-
-# ======================
-# Environment files
-# ======================
 .env
-.env.*
-backend/.env
-frontend/.env
-
-# ======================
-# Logs
-# ======================
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# ======================
-# Build folders
-# ======================
-dist/
-build/
-
-# ======================
-# OS files
-# ======================
-.DS_Store
-Thumbs.db
-
-# ======================
-# VS Code
-# ======================
-.vscode/
-
-# ======================
-# Uploads
-# ======================
-uploads/
+backend/node_modules/
+frontend/node_modules/

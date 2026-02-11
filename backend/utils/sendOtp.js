@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 const transporter = require("./email");
 
 module.exports = async (email, otp) => {
-  await transporter.sendMailWithLog({
+  await transporter.sendMail({
     from: `"Samyak Hospital" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: "Your OTP Verification Code",

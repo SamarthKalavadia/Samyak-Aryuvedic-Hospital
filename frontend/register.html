@@ -260,7 +260,7 @@
       <div class="or">OR</div>
 
       <!-- GOOGLE REGISTER -->
-      <a href="/api/auth/google" class="google-btn">
+      <a href="http://localhost:5001/api/auth/google" class="google-btn">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
         Continue with Google
       </a>
@@ -354,7 +354,7 @@
 
       try {
         // start registration and send OTP
-        const res = await fetch("/api/users/register-init", {
+        const res = await fetch("http://localhost:5001/api/users/register-init", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -391,7 +391,7 @@
       }
 
       try {
-        const res = await fetch("/api/users/verify-otp", {
+        const res = await fetch("http://localhost:5001/api/users/verify-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -435,7 +435,7 @@
       }
 
       try {
-        const res = await fetch("/api/users/resend-otp", {
+        const res = await fetch("http://localhost:5001/api/users/resend-otp", {
           method: "POST",
           headers: {
             "Content-Type": "application/json"

@@ -252,7 +252,7 @@
       <div id="googleSection">
         <div class="or">OR</div>
 
-        <a href="/api/auth/google" class="google-btn">
+        <a href="http://localhost:5001/api/auth/google" class="google-btn">
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
           Continue with Google
         </a>
@@ -276,7 +276,7 @@
       const params = new URLSearchParams(window.location.search);
       const role = params.get("role") || "patient"; // default patient
 
-      const url = role === "doctor" ? "/api/doctors/login" : "/api/users/login";
+      const url = role === "doctor" ? "http://localhost:5001/api/doctors/login" : "http://localhost:5001/api/users/login";
 
       const res = await fetch(url, {
         method: "POST",
@@ -342,10 +342,12 @@
         const name = params.get("name");
 
         if (email) {
+          // prefill email field but keep editable
           const emailInput = document.getElementById("email");
           emailInput.value = decodeURIComponent(email);
         }
 
+        // link to register with prefilled info
         const regParams = new URLSearchParams();
         regParams.set("google", "true");
         if (email) regParams.set("email", email);
@@ -353,8 +355,6 @@
         btn.href = `activate.html?${regParams.toString()}`;
 
         notice.style.display = "block";
-      } else if (params.get("error") === "google_failed") {
-        window.showToast("error", "Google login failed. Try again.");
       }
     })();
   </script>

@@ -492,13 +492,13 @@ router.get('/search', auth, async (req, res) => {
     const users = await require('../models/User').find({
       role: 'patient',
       $or: [{ firstName: regex }, { lastName: regex }, { email: regex }, { phone: regex }]
-    }).limit(12).select('firstName lastName phone email status');
+    }).limit(12).select('firstName lastName phone email isAccountActivated');
     res.json(users.map(u => ({
       id: u._id,
       name: (u.firstName || '') + (u.lastName ? (' ' + u.lastName) : ''),
       phone: u.phone,
       email: u.email,
-      status: u.status
+      isAccountActivated: u.isAccountActivated
     })));
   } catch (err) {
     console.error(err);
@@ -566,8 +566,7 @@ router.post("/invite", auth, async (req, res) => {
       await sendActivation(finalEmail, token, req.headers.host);
       res.json({ success: true, message: "Invitation sent" });
     } catch (e) {
-      console.error("Failed to send activation email:", e);
-      res.status(500).json({ success: false, message: "Patient created but failed to send activation email. You can resend it from the patient list." });
+      res.json({ success: true, message: "Patient created but failed to send email" });
     }
 
   } catch (e) {
@@ -621,7 +620,6 @@ router.put("/update-email/:id", auth, async (req, res) => {
       await sendActivation(email, token, req.headers.host);
     } catch (e) {
        console.error("Failed to send activation email after update:", e);
-       return res.status(500).json({ success: false, message: "Email updated but failed to send activation link. Please try resending." });
     }
 
     res.json({ 

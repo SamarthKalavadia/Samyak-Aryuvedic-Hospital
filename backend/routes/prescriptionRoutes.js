@@ -337,7 +337,7 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-// Manual Resend Trigger (Backend Generated)
+// Manual Resend Trigger (Backend Generated - Non-blocking)
 router.post('/send-pdf', auth, async (req, res) => {
   try {
     const {
@@ -348,19 +348,23 @@ router.post('/send-pdf', auth, async (req, res) => {
       message: 'Missing prescriptionId'
     });
 
-    // Process and wait for result for clear doctor feedback
-    await processPrescriptionDelivery(prescriptionId);
-
+    // Respond immediately and process in background
     res.json({
       success: true,
-      message: 'Prescription successfully sent to patient'
+      message: 'Processing: Prescription is being sent to patient'
+    });
+
+    setImmediate(() => {
+      processPrescriptionDelivery(prescriptionId).catch(err => {
+        console.error('Background PDF Send Error:', err);
+      });
     });
 
   } catch (err) {
-    console.error('PDF Send Error:', err);
+    console.error('PDF Trigger Error:', err);
     res.status(500).json({
       success: false,
-      message: 'Failed to send prescription: ' + (err.message || 'Server error')
+      message: 'Failed to start email process'
     });
   }
 });

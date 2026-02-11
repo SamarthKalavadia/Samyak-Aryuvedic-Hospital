@@ -1,11 +1,6 @@
 require("dotenv").config(); // must be first
 const path = require("path");
 
-// Production Email Safety for Railway/Gmail
-if (process.env.NODE_ENV === 'production') {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-}
-
 const express = require("express");
 const passport = require("passport");
 const connectDB = require("./config/db");
@@ -29,26 +24,7 @@ app.use(
   }),
 );
 app.use(passport.initialize());
-const cors = require("cors");
-const allowedOrigins = [
-  "http://localhost:5501",
-  "http://127.0.0.1:5501",
-  "http://localhost:5500",
-  "http://127.0.0.1:5500",
-  "http://localhost:5173", // Vite
-  process.env.FRONTEND_URL
-].filter(Boolean);
-
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
+app.use(require("cors")());
 
 // Serve static frontend files
 app.use(express.static(path.join(__dirname, "../frontend")));

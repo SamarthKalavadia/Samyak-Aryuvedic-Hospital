@@ -139,7 +139,7 @@
 
     /* ================= FETCH DASHBOARD DATA ================= */
 
-    fetch(`/api/dashboard/${user.role}/${user.id}`, {
+    fetch(`http://localhost:5001/api/dashboard/${user.role}/${user.id}`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

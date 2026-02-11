@@ -2405,7 +2405,7 @@
   <datalist id="medSuggestions"></datalist>
 
   <script>
-    const API = "";
+    const API = "http://localhost:5001";
     const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
@@ -2465,30 +2465,25 @@
       document.getElementById('drawerContact').innerText = p.contact || 'Not Provided';
 
       // Status
-      // Status handling based on new status model
       const statusBadge = document.getElementById('drawerStatus');
-      if (p.status === 'PENDING') {
+      if (p.isPlaceholderEmail) {
         statusBadge.className = 'status-badge status-warning';
         statusBadge.innerText = 'Email Missing';
         statusBadge.style.background = '#fff7ed';
         statusBadge.style.color = '#c2410c';
         statusBadge.style.border = '1px solid #ffedd5';
-      } else if (p.status === 'ACTIVE') {
+      } else if (p.accountActivated || p.isAccountActivated) {
         statusBadge.className = 'status-badge status-active';
         statusBadge.innerText = 'Active Account';
         statusBadge.style.background = '#e8f5e9';
         statusBadge.style.color = '#2e7d32';
         statusBadge.style.border = '1px solid #c8e6c9';
-      } else if (p.status === 'INVITED' || p.status === 'VERIFIED') {
+      } else {
         statusBadge.className = 'status-badge status-gray';
         statusBadge.innerText = 'Invite Sent';
         statusBadge.style.background = '#f1f5f9';
         statusBadge.style.color = '#475569';
         statusBadge.style.border = '1px solid #e2e8f0';
-      } else {
-        // Fallback for any legacy data
-        statusBadge.className = 'status-badge status-gray';
-        statusBadge.innerText = p.status || 'Pending';
       }
 
       // Age / Gender
@@ -3027,22 +3022,19 @@
         const initials = p.name ? p.name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase() : "P";
 
         // Last/Upcoming appointment badge logic with real-time date comparison
-        // Status Badge Logic matching the status model
         let lastApptBadge = '';
         if (p.status === 'PENDING') {
           lastApptBadge = `<span class="last-appt-badge" style="background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5;">Email Missing</span>`;
         } else if (p.status === 'INVITED' || p.status === 'VERIFIED') {
           lastApptBadge = `<span class="last-appt-badge" style="background: #eef2ff; color: #4338ca; border: 1px solid #e0e7ff;">Invite Sent</span>`;
-        } else if (p.status === 'ACTIVE' && p.upcomingAppointmentDate) {
+        } else if (p.upcomingAppointmentDate) {
           const dateStr = new Date(p.upcomingAppointmentDate).toLocaleDateString('en-IN');
           lastApptBadge = `<span class="last-appt-badge last-appt-upcoming">Upcoming: ${dateStr}</span>`;
-        } else if (p.status === 'ACTIVE' && p.lastAppointmentDate) {
+        } else if (p.lastAppointmentDate) {
           const dateStr = new Date(p.lastAppointmentDate).toLocaleDateString('en-IN');
           lastApptBadge = `<span class="last-appt-badge last-appt-green">Last: ${dateStr}</span>`;
-        } else if (p.status === 'ACTIVE') {
-          lastApptBadge = `<span class="last-appt-badge last-appt-gray">No visits yet</span>`;
         } else {
-          lastApptBadge = `<span class="last-appt-badge last-appt-gray">${p.status || 'Pending'}</span>`;
+          lastApptBadge = `<span class="last-appt-badge last-appt-gray">No visits yet</span>`;
         }
 
         return `

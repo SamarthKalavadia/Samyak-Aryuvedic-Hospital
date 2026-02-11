@@ -3,7 +3,7 @@ function login() {
   const password = document.getElementById("password").value;
   const role = new URLSearchParams(window.location.search).get("role");
 
-  const url = role === 'doctor' ? '/api/doctors/login' : '/api/users/login';
+  const url = role === 'doctor' ? 'http://localhost:5001/api/doctors/login' : 'http://localhost:5001/api/users/login';
 
   fetch(url, {
     method: "POST",
@@ -53,7 +53,7 @@ function registerUser() {
     return;
   }
 
-  fetch("/api/users/register", {
+  fetch("http://localhost:5001/api/users/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"

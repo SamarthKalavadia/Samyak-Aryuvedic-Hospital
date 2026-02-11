@@ -9,54 +9,33 @@ passport.use(
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: process.env.GOOGLE_CALLBACK_URL
     },
-      async (accessToken, refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done) => {
       try {
         const email = profile.emails[0].value;
 
-        // 1. Try to find in User collection (Patients)
-        let user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
-        
-        // 2. If not found, check Doctor collection
-        if (!user) {
-          const Doctor = require("../models/Doctor");
-          const doctor = await Doctor.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
-          if (doctor) {
-            // Found a doctor, return doctor object with role fixed
-            doctor.role = "doctor"; // Ensure role is present
-            return done(null, doctor);
-          }
-        }
+        const user = await User.findOne({ email });
 
-        // 3. If still not found, create a new User (Patient)
         if (!user) {
-          user = new User({
-            firstName: profile.name?.givenName || profile.displayName?.split(" ")[0] || "User",
-            lastName: profile.name?.familyName || profile.displayName?.split(" ")[1] || "",
-            email: email,
-            role: "patient",
-            isGoogleUser: true,
-            isVerified: true,
-            status: "ACTIVE"
+          // Do not auto-create users via Google; pass profile so caller can redirect to register
+          return done(null, false, {
+            message: "NOT_REGISTERED",
+            profile: {
+              email: profile.emails && profile.emails[0] && profile.emails[0].value,
+              name: profile.displayName
+            }
           });
-          await user.save();
-          return done(null, user);
         }
 
-        // 4. If existing user found, update attributes
-        let changed = false;
+        // Only allow patients to log in via Google
+        if (user.role && user.role !== "patient") {
+          return done(null, false, { message: "NOT_A_PATIENT" });
+        }
+
+        // mark that this account is a Google user (persist)
         if (!user.isGoogleUser) {
           user.isGoogleUser = true;
-          changed = true;
+          await user.save();
         }
-        if (!user.isVerified) {
-          user.isVerified = true;
-          changed = true;
-        }
-        if (user.status !== 'ACTIVE') {
-          user.status = 'ACTIVE';
-          changed = true;
-        }
-        if (changed) await user.save();
 
         return done(null, user);
       } catch (err) {
